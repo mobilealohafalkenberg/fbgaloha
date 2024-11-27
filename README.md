@@ -7,8 +7,14 @@ A modified fork of [Stanford Mobile ALOHA](https://github.com/UT-Austin-RPL/mobi
 ## Directory Structure
 
 ### `act/`
-- Python virtual environment containing required dependencies
-- Must be activated before running scripts from other directories
+-- start with creating a venv
+```bash
+python3 -m venv act
+# activate the venv "act":
+source act/bin/activate
+```
+
+
 
 ### `act_training_evaluation/`
 Main project directory containing:
