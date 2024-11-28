@@ -1,6 +1,6 @@
 import os
 
-from aloha.constants import JOINT_NAMES
+from constants import JOINT_NAMES
 import cv2
 import fnmatch
 import h5py
