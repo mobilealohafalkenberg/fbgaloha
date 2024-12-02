@@ -21,6 +21,9 @@ from utils import (
     set_seed,
 )
 
+import os
+from huggingface_hub import HfApi, create_repo, upload_folder
+from typing import Optional, Union, Dict
 
 def main(args):
     set_seed(args['seed'])
@@ -172,6 +175,8 @@ def main(args):
     torch.save(best_state_dict, ckpt_path)
     print(f'Best checkpoint saved with validation loss {min_val_loss:.6f} at step {best_step}')
     wandb.finish()
+    hf_repo_name = args['ckpt_dir'].split('/')[-1]
+    upload_to_huggingface(ckpt_dir,hf_repo_name)
 
 
 def make_policy(policy_class, policy_config):
@@ -291,7 +296,28 @@ def repeater(data_loader):
             yield data
         print(f'Epoch {epoch} completed')
         epoch += 1
-
+        
+def upload_to_huggingface(model_path: str, repo_name: str) -> None:
+    try:
+        api = HfApi()
+        full_repo_name = f"mobilealohafalkenberg/{repo_name}"
+        print(f"Creating repository: {full_repo_name}")
+        
+        try:
+            create_repo(repo_id=full_repo_name, repo_type="model")
+        except Exception as e:
+            print(f"Repository exists or creation failed: {e}")
+        
+        print(f"Uploading files to {full_repo_name}")
+        upload_folder(
+            folder_path=model_path,
+            repo_id=full_repo_name,
+            repo_type="model"
+        )
+        print(f"Upload complete: https://huggingface.co/{full_repo_name}")
+    except Exception as e:
+        print(f"Error uploading: {e}")
+        raise
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
